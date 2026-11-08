@@ -1,0 +1,83 @@
+<%- include('../partials/top') %>
+
+<div class="page-head">
+  <div>
+    <h1>Users</h1>
+    <p class="muted"><%= plural(users.length, 'account') %><%= role ? ` with role ${roleLabel(role)}` : '' %></p>
+  </div>
+</div>
+
+<div class="two-col wide-left">
+  <section class="card">
+    <nav class="tabs" aria-label="Filter by role">
+      <a href="/admin/users" <%- !role ? 'aria-current="page"' : '' %>>All</a>
+      <% ['student','staff','maintenance','admin'].forEach((r) => { %>
+        <a href="/admin/users?role=<%= r %>" <%- role === r ? 'aria-current="page"' : '' %>><%= roleLabel(r) %></a>
+      <% }) %>
+    </nav>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Name</th><th>Role</th><th class="num">Open jobs</th><th><span class="sr-only">Actions</span></th></tr></thead>
+        <tbody>
+          <% users.forEach((u) => { %>
+            <tr>
+              <td><strong><%= u.name %></strong><br><span class="muted small"><%= u.email %></span></td>
+              <td>
+                <% if (u.id === user.id) { %>
+                  <span class="role-pill"><%= roleLabel(u.role) %> (you)</span>
+                <% } else { %>
+                  <form method="post" action="/admin/users/<%= u.id %>/role" class="inline-form" data-autosubmit>
+                    <label class="sr-only" for="role-<%= u.id %>">Role for <%= u.name %></label>
+                    <select id="role-<%= u.id %>" name="role">
+                      <% ['student','staff','maintenance','admin'].forEach((r) => { %><option value="<%= r %>" <%= u.role === r ? 'selected' : '' %>><%= roleLabel(r) %></option><% }) %>
+                    </select>
+                    <noscript><button class="btn btn-ghost btn-sm" type="submit">Save</button></noscript>
+                  </form>
+                <% } %>
+              </td>
+              <td class="num"><%= u.role === 'maintenance' ? u.open_assignments : '' %></td>
+              <td class="actions">
+                <% if (u.id !== user.id) { %>
+                  <form method="post" action="/admin/users/<%= u.id %>/delete" data-confirm="Delete <%= u.name %>? Their requests will also be deleted.">
+                    <button class="icon-btn danger" type="submit" aria-label="Delete <%= u.name %>"><%- icon('trash') %></button>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <aside class="card">
+    <h2>Add staff account</h2>
+    <p class="muted small">Create accounts for maintenance staff and other administrators.</p>
+    <form method="post" action="/admin/users" class="stack-form" novalidate>
+      <div class="field <%= errors.name ? 'has-error' : '' %>">
+        <label for="new-name">Full name</label>
+        <input id="new-name" name="name" required value="<%= values.name || '' %>">
+        <% if (errors.name) { %><p class="field-error"><%= errors.name %></p><% } %>
+      </div>
+      <div class="field <%= errors.email ? 'has-error' : '' %>">
+        <label for="new-email">Email</label>
+        <input id="new-email" name="email" type="email" required value="<%= values.email || '' %>">
+        <% if (errors.email) { %><p class="field-error"><%= errors.email %></p><% } %>
+      </div>
+      <div class="field">
+        <label for="new-role">Role</label>
+        <select id="new-role" name="role">
+          <% ['maintenance','admin','staff','student'].forEach((r) => { %><option value="<%= r %>" <%= values.role === r ? 'selected' : '' %>><%= roleLabel(r) %></option><% }) %>
+        </select>
+      </div>
+      <div class="field <%= errors.password ? 'has-error' : '' %>">
+        <label for="new-password">Temporary password</label>
+        <input id="new-password" name="password" type="text" autocomplete="off" required>
+        <% if (errors.password) { %><p class="field-error"><%= errors.password %></p><% } else { %><p class="hint">8+ characters with a letter and a number.</p><% } %>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit"><%- icon('plus') %> Create account</button>
+    </form>
+  </aside>
+</div>
+
+<%- include('../partials/bottom') %>

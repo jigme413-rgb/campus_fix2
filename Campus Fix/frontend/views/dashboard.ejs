@@ -1,0 +1,70 @@
+<%- include('partials/top') %>
+<% const isMaintenance = user.role === 'maintenance'; %>
+
+<div class="page-head">
+  <div>
+    <h1>Kuzuzangpo, <%= firstName(user.name) %></h1>
+    <p class="muted"><%= isMaintenance ? 'Your assigned jobs, most urgent first.' : 'Track the problems you have reported.' %></p>
+  </div>
+  <% if (!isMaintenance) { %>
+    <a class="btn btn-primary" href="/requests/new"><%- icon('plus') %> Report a problem</a>
+  <% } %>
+</div>
+
+<%- include('partials/status-rail', { counts }) %>
+
+<div class="two-col">
+  <section class="card">
+    <div class="card-head">
+      <h2><%= isMaintenance ? 'Open jobs' : 'Open requests' %></h2>
+      <a href="/requests" class="text-link">View all</a>
+    </div>
+    <% if (active.length) { %>
+      <ul class="request-list">
+        <% active.forEach((r) => { %><%- include('partials/request-item', { r, showPeople: !isMaintenance, showReporter: isMaintenance }) %><% }) %>
+      </ul>
+    <% } else { %>
+      <div class="empty-state small-empty">
+        <%- icon('check', 'icon-lg') %>
+        <p><%= isMaintenance ? 'Nothing assigned to you right now.' : 'You have no open requests.' %></p>
+        <% if (!isMaintenance) { %><a class="btn btn-ghost btn-sm" href="/requests/new">Report a problem</a><% } %>
+      </div>
+    <% } %>
+  </section>
+
+  <aside class="stack">
+    <section class="card">
+      <div class="card-head">
+        <h2>Latest updates</h2>
+        <a href="/notifications" class="text-link">All</a>
+      </div>
+      <% if (notifications.length) { %>
+        <ul class="note-list compact">
+          <% notifications.forEach((n) => { %>
+            <li class="<%= n.is_read ? '' : 'unread' %>">
+              <form method="post" action="/notifications/<%= n.id %>/open">
+                <button type="submit" class="note-btn">
+                  <span><%= n.message %></span>
+                  <small class="muted"><%= timeAgo(n.created_at) %></small>
+                </button>
+              </form>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p class="muted small">No notifications yet.</p>
+      <% } %>
+    </section>
+
+    <% if (recentlyDone.length) { %>
+      <section class="card">
+        <h2>Recently completed</h2>
+        <ul class="request-list">
+          <% recentlyDone.forEach((r) => { %><%- include('partials/request-item', { r }) %><% }) %>
+        </ul>
+      </section>
+    <% } %>
+  </aside>
+</div>
+
+<%- include('partials/bottom') %>

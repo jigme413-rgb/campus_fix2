@@ -1,0 +1,37 @@
+<%- include('partials/top') %>
+
+<div class="auth card">
+  <h1>Log in</h1>
+  <p class="muted">Use your CampusFix email and password.</p>
+
+  <% if (error) { %>
+    <div class="form-error" role="alert"><%- icon('alert') %> <%= error %></div>
+  <% } %>
+
+  <form method="post" action="/login" class="stack-form" novalidate>
+    <input type="hidden" name="next" value="<%= next %>">
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email" required value="<%= values.email || '' %>">
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit">Log in</button>
+  </form>
+
+  <p class="auth-switch">New to CampusFix? <a href="/register">Create an account</a></p>
+
+  <details class="demo-accounts">
+    <summary>Demo accounts</summary>
+    <table>
+      <tr><th>Student</th><td><code>student@sherubtse.edu.bt</code></td><td><code>Student@123</code></td></tr>
+      <tr><th>Lecturer</th><td><code>lecturer@sherubtse.edu.bt</code></td><td><code>Staff@123</code></td></tr>
+      <tr><th>Maintenance</th><td><code>electrician@sherubtse.edu.bt</code></td><td><code>Maint@123</code></td></tr>
+      <tr><th>Admin</th><td><code>admin@sherubtse.edu.bt</code></td><td><code>Admin@123</code></td></tr>
+    </table>
+  </details>
+</div>
+
+<%- include('partials/bottom') %>

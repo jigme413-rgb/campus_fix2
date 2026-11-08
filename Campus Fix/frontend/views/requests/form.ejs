@@ -1,0 +1,74 @@
+<%- include('../partials/top') %>
+<% const isEdit = mode === 'edit'; %>
+
+<a class="back-link" href="<%= isEdit ? `/requests/${request.id}` : '/requests' %>"><%- icon('arrowLeft') %> <%= isEdit ? 'Back to request' : 'My requests' %></a>
+
+<div class="form-layout">
+  <section class="card">
+    <h1><%= isEdit ? `Edit request #${request.id}` : 'Report a problem' %></h1>
+    <p class="muted"><%= isEdit ? 'You can edit a request until it has been assigned.' : 'Be specific about where the problem is so maintenance staff can find it quickly.' %></p>
+
+    <% if (error) { %><div class="form-error" role="alert"><%- icon('alert') %> <%= error %></div><% } %>
+
+    <form method="post" action="<%= isEdit ? `/requests/${request.id}/edit` : '/requests/new' %>" class="stack-form" novalidate>
+      <div class="field <%= errors.title ? 'has-error' : '' %>">
+        <label for="title">What is the problem?</label>
+        <input id="title" name="title" maxlength="150" required placeholder="e.g. Tube light not working" value="<%= values.title || '' %>" <%- errors.title ? 'aria-invalid="true"' : '' %>>
+        <% if (errors.title) { %><p class="field-error"><%= errors.title %></p><% } %>
+      </div>
+
+      <fieldset class="field <%= errors.category_id ? 'has-error' : '' %>">
+        <legend>Category</legend>
+        <div class="category-picker">
+          <% categories.forEach((c) => { %>
+            <label class="category-option">
+              <input type="radio" name="category_id" value="<%= c.id %>" required <%= Number(values.category_id) === c.id ? 'checked' : '' %>>
+              <span class="cat-icon cat-<%= slug(c.name) %>"><%- icon(categoryIcon(c.name)) %></span>
+              <span><%= c.name %></span>
+            </label>
+          <% }) %>
+        </div>
+        <% if (errors.category_id) { %><p class="field-error"><%= errors.category_id %></p><% } %>
+      </fieldset>
+
+      <div class="field <%= errors.location ? 'has-error' : '' %>">
+        <label for="location">Location</label>
+        <input id="location" name="location" maxlength="150" required list="locations" placeholder="Building, floor and room" value="<%= values.location || '' %>">
+        <datalist id="locations">
+          <option value="Academic Block A, "><option value="Academic Block B, "><option value="IT Block, Computer Lab "><option value="Library, "><option value="Boys Hostel "><option value="Girls Hostel "><option value="Dining Hall"><option value="Administration Block, ">
+        </datalist>
+        <% if (errors.location) { %><p class="field-error"><%= errors.location %></p><% } %>
+      </div>
+
+      <div class="field <%= errors.description ? 'has-error' : '' %>">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="5" maxlength="2000" required placeholder="What happened, since when, and anything that would help the repair"><%= values.description || '' %></textarea>
+        <% if (errors.description) { %><p class="field-error"><%= errors.description %></p><% } %>
+      </div>
+
+      <fieldset class="field segmented priority-picker">
+        <legend>Priority</legend>
+        <% PRIORITIES.forEach((p) => { %>
+          <label class="priority-<%= slug(p) %>"><input type="radio" name="priority" value="<%= p %>" <%= (values.priority || 'Medium') === p ? 'checked' : '' %>> <%= p %></label>
+        <% }) %>
+      </fieldset>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit"><%- icon(isEdit ? 'check' : 'plus') %> <%= isEdit ? 'Save changes' : 'Submit request' %></button>
+        <a class="btn btn-ghost" href="<%= isEdit ? `/requests/${request.id}` : '/requests' %>">Cancel</a>
+      </div>
+    </form>
+  </section>
+
+  <aside class="card tips">
+    <h2>Choosing a priority</h2>
+    <dl>
+      <dt><%- include('../partials/priority', { priority: 'Urgent' }) %></dt><dd>Safety risk: exposed wiring, flooding, gas smell.</dd>
+      <dt><%- include('../partials/priority', { priority: 'High' }) %></dt><dd>Stops a class or hostel room from being used.</dd>
+      <dt><%- include('../partials/priority', { priority: 'Medium' }) %></dt><dd>Inconvenient but work can continue.</dd>
+      <dt><%- include('../partials/priority', { priority: 'Low' }) %></dt><dd>Cosmetic or can wait for routine maintenance.</dd>
+    </dl>
+  </aside>
+</div>
+
+<%- include('../partials/bottom') %>

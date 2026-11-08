@@ -1,0 +1,24 @@
+{
+  "name": "campusfix-frontend",
+  "version": "1.0.0",
+  "description": "CampusFix web frontend - server-rendered EJS pages that consume the CampusFix REST API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch-path=src --watch-path=views src/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "07240005",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@fontsource-variable/outfit": "^5.3.0",
+    "@phosphor-icons/core": "^2.1.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0"
+  }
+}
