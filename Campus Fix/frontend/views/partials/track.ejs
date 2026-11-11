@@ -1,4 +1,0 @@
-<% const stepIndex = STATUSES.indexOf(status); %>
-<span class="track track-<%= slug(status) %>" role="img" aria-label="Stage <%= stepIndex + 1 %> of 4: <%= status %>">
-  <% STATUSES.forEach((s, i) => { %><span class="track-seg<%= i <= stepIndex ? ' on' : '' %>"></span><% }) %>
-</span>
