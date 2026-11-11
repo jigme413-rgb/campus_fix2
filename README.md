@@ -24,7 +24,7 @@ The browser never sees the JWT. The frontend keeps it in an `httpOnly`, `SameSit
 
 ## Quick start
 
-You need **Node.js 18+** and **PostgreSQL 14+** running locally. Use two terminals.
+You need **Node.js 18+** and **PostgreSQL 14+** running locally. Use two terminals. Run each command from its service folder; the project root has no `npm run dev` script. Leave both terminal processes running while you use the app.
 
 **1. Backend**
 
