@@ -1,8 +1,5 @@
 # CampusFix
 
-**Event-driven maintenance request management for Sherubtse College, Royal University of Bhutan.**
-Backend Development Project · Student ID 07240005
-
 Students and staff report problems such as a broken classroom light, a leaking hostel tap or dead Wi-Fi. The maintenance office assigns each report to a staff member, and everyone follows it from **Pending → Assigned → In Progress → Completed**. Every change raises an event; separate handlers write the status history and send notifications.
 
 | Folder | What it is | Port |
