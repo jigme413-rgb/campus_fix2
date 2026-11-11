@@ -1,0 +1,98 @@
+<%- include('../partials/top') %>
+<% const maxCat = Math.max(1, ...stats.by_category.map((c) => c.count)); %>
+
+<div class="page-head">
+  <div>
+    <h1>Maintenance overview</h1>
+    <p class="muted"><%= plural(stats.total, 'request') %> in total. Average time to fix: <strong><%= duration(stats.avg_resolution_hours) %></strong>.</p>
+  </div>
+  <a class="btn btn-primary" href="<%= qs('/requests', { status: 'Pending', sort: 'priority' }) %>"><%- icon('list') %> Work the queue</a>
+</div>
+
+<%- include('../partials/status-rail', { counts: stats.by_status }) %>
+
+<div class="two-col">
+  <div class="stack">
+    <section class="card">
+      <div class="card-head">
+        <h2>Waiting for assignment</h2>
+        <a class="text-link" href="<%= qs('/requests', { status: 'Pending' }) %>">View all <%= waiting.total %></a>
+      </div>
+      <% if (waiting.requests.length) { %>
+        <ul class="request-list">
+          <% waiting.requests.forEach((r) => { %><%- include('../partials/request-item', { r, showReporter: true }) %><% }) %>
+        </ul>
+      <% } else { %>
+        <p class="muted small">Every request has been assigned.</p>
+      <% } %>
+    </section>
+
+    <section class="card">
+      <h2>Requests by category</h2>
+      <p class="muted small">Recurring problem areas across campus.</p>
+      <ul class="bars">
+        <% stats.by_category.forEach((c) => { %>
+          <li>
+            <span class="bar-label"><%= c.category %></span>
+            <span class="bar-track"><span class="bar-fill" style="--w: <%= Math.round((c.count / maxCat) * 100) %>%"></span></span>
+            <span class="bar-value"><%= c.count %></span>
+          </li>
+        <% }) %>
+      </ul>
+      <% if (stats.recurring_locations.length) { %>
+        <h3>Locations reported more than once</h3>
+        <ul class="hotspots">
+          <% stats.recurring_locations.forEach((l) => { %>
+            <li><a href="<%= qs('/requests', { search: l.location }) %>"><%- icon('pin') %> <%= l.location %></a> <span class="count-pill"><%= l.count %></span></li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </section>
+  </div>
+
+  <aside class="stack">
+    <section class="card">
+      <h2>Staff workload</h2>
+      <% if (stats.staff_workload.length) { %>
+        <table class="table compact">
+          <thead><tr><th>Staff</th><th class="num">Open</th><th class="num">Done</th></tr></thead>
+          <tbody>
+            <% stats.staff_workload.forEach((s) => { %>
+              <tr>
+                <td><a href="<%= qs('/requests', { assigned_to: s.id }) %>"><%= s.name %></a></td>
+                <td class="num"><%= s.open %></td>
+                <td class="num"><%= s.completed %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p class="muted small">No maintenance staff yet. <a href="/admin/users">Add staff</a>.</p>
+      <% } %>
+    </section>
+
+    <section class="card">
+      <h2>Live event log</h2>
+      <p class="muted small">Events raised by the API since it last started.</p>
+      <% if (events.length) { %>
+        <ol class="event-log">
+          <% events.forEach((e) => { %>
+            <li>
+              <code><%= e.event %></code>
+              <span><% if (e.request_id) { %><a href="/requests/<%= e.request_id %>">#<%= e.request_id %></a><% } %>
+                <%= e.actor ? `by ${e.actor.name}` : '' %>
+                <% if (e.details.to) { %>(<%= e.details.from || 'new' %> → <%= e.details.to %>)<% } %>
+                <% if (e.details.assigned_to) { %>→ <%= e.details.assigned_to %><% } %>
+              </span>
+              <small class="muted"><%= timeAgo(e.at) %></small>
+            </li>
+          <% }) %>
+        </ol>
+      <% } else { %>
+        <p class="muted small">No events yet. Submit or update a request to see them appear.</p>
+      <% } %>
+    </section>
+  </aside>
+</div>
+
+<%- include('../partials/bottom') %>

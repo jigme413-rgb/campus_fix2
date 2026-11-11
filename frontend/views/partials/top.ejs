@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"<% if (theme) { %> data-theme="<%= theme %>"<% } %>>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="CampusFix: report and track maintenance problems at Sherubtse College.">
+  <title><%= locals.title ? `${title} | CampusFix` : 'CampusFix | Sherubtse College maintenance requests' %></title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/outfit/wght.css">
+  <link rel="stylesheet" href="/css/style.css?v=<%= assetVersion %>">
+  <script src="/js/app.js?v=<%= assetVersion %>" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/" aria-label="CampusFix home">
+        <span class="brand-mark"><%- icon('wrench') %></span>
+        <span>Campus<strong>Fix</strong></span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main">
+        <% if (user) { %>
+          <% if (user.role === 'admin') { %>
+            <a href="/admin" <%- currentPath === '/admin' ? 'aria-current="page"' : '' %>><%- icon('chart') %><span>Overview</span></a>
+            <a href="/requests" <%- currentPath.startsWith('/requests') ? 'aria-current="page"' : '' %>><%- icon('list') %><span>Requests</span></a>
+            <a href="/admin/users" <%- currentPath.startsWith('/admin/users') ? 'aria-current="page"' : '' %>><%- icon('users') %><span>Users</span></a>
+            <a href="/admin/categories" <%- currentPath.startsWith('/admin/categories') ? 'aria-current="page"' : '' %>><%- icon('tag') %><span>Categories</span></a>
+          <% } else { %>
+            <a href="/dashboard" <%- currentPath === '/dashboard' ? 'aria-current="page"' : '' %>><%- icon('chart') %><span>Dashboard</span></a>
+            <a href="/requests" <%- currentPath === '/requests' ? 'aria-current="page"' : '' %>><%- icon('list') %><span><%= user.role === 'maintenance' ? 'My work' : 'My requests' %></span></a>
+            <% if (user.role === 'student' || user.role === 'staff') { %>
+              <a href="/requests/new" class="nav-cta"><%- icon('plus') %><span>Report a problem</span></a>
+            <% } %>
+          <% } %>
+          <a href="/notifications" class="bell" <%- currentPath === '/notifications' ? 'aria-current="page"' : '' %> aria-label="Notifications<%= unread ? `, ${unread} unread` : '' %>">
+            <%- icon('bell') %><% if (unread) { %><span class="badge-count"><%= unread > 9 ? '9+' : unread %></span><% } %>
+          </a>
+          <div class="nav-user">
+            <span class="avatar" aria-hidden="true"><%= user.name.charAt(0) %></span>
+            <span class="nav-user-text"><strong><%= firstName(user.name) %></strong><small><%= roleLabel(user.role) %></small></span>
+            <form action="/logout" method="post">
+              <button type="submit" class="icon-btn" aria-label="Log out" title="Log out"><%- icon('logout') %></button>
+            </form>
+          </div>
+        <% } else { %>
+          <a href="/login" <%- currentPath === '/login' ? 'aria-current="page"' : '' %>>Log in</a>
+          <a href="/register" class="btn btn-primary btn-sm">Report a problem</a>
+        <% } %>
+        <form action="/theme" method="post" id="theme-form">
+          <input type="hidden" name="theme" value="<%= theme === 'dark' ? 'light' : 'dark' %>">
+          <input type="hidden" name="returnTo" value="<%= currentUrl %>">
+          <button type="submit" class="icon-btn" aria-label="Switch between light and dark mode" title="Light / dark mode"><%- icon('contrast') %></button>
+        </form>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap page">
+    <% if (flash) { %>
+      <div class="flash flash-<%= flash.type %>" role="status">
+        <%- icon(flash.type === 'error' ? 'alert' : flash.type === 'success' ? 'check' : 'info') %>
+        <span><%= flash.message %></span>
+      </div>
+    <% } %>

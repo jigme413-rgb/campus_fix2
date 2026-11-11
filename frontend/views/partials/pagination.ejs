@@ -1,0 +1,11 @@
+<% if (list.pages > 1) { %>
+  <nav class="pagination" aria-label="Pages">
+    <% if (list.page > 1) { %>
+      <a class="btn btn-ghost btn-sm" href="<%= qs('/requests', filters, { page: list.page - 1 }) %>"><%- icon('arrowLeft') %> Previous</a>
+    <% } else { %><span></span><% } %>
+    <span class="muted small">Page <%= list.page %> of <%= list.pages %></span>
+    <% if (list.page < list.pages) { %>
+      <a class="btn btn-ghost btn-sm" href="<%= qs('/requests', filters, { page: list.page + 1 }) %>">Next <%- icon('arrowRight') %></a>
+    <% } else { %><span></span><% } %>
+  </nav>
+<% } %>
